@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<title>C# Examples for Demo Examintaion</title>
+<head>
+</head>
+<body>
+<h1>C# Examples for Demo Examintaion</h1>
+<li>1. Round Button Style</li>
+<p>
+   <br> -Button-
+   <br> -Button.Resources-
+        <br>-Style TargetType="Border"-
+            <br>-Setter Property="CornerRadius" Value="5"/-
+        <br>-/Style-
+    <br>-/Button.Resources-
+<br>-/Button-
+<br> "-" Replace with < >
+</p>
+<hr>
+<li>2. Pattern Single Tone - Correct connect to DataBase </li>
+<p>Open ****Model.Context.cs</p>
+<p>Add <b>private static YourBaseEntity _context;</b></p>
+<p>Add getting method <b> public static YourBaseEntity GetContext() 
+<br>{
+<br> if(_context == null)
+<br> _context = new YourBaseEntity();
+<br> return _context;
+</b></p>
+<hr>
+<li>
+    3. Add Binding to DataGrid
+</li>
+<p> In XAML: - DatagridTextColumn Header="123" Binding={Binding NameOfBindingPole} Width="*"/-</p>
+<li> 
+<hr>
+    4. Add Button in DataGrid
+</li>
+<p>
+    DataGridTemplateColumn Width="auto"
+                   <br> DataGridTemplateColumn.CellTemplate
+                        <br>DataTemplate
+                           <br> Button Content="Редактировать" Name="EditBtn" Click="EditBtn_Click"/
+                        <br>DataTemplate
+                    <br>DataGridTemplateColumn.CellTemplate
+                <br>DataGridTemplateColumn
+</p>
+<hr>
+<li> 
+    5. Adding Items to DataBase
+    <br> In AddingPage add next things
+    <br><b> private ObjectClass _currentItem = new ObjectClass();</b>
+    <br> After InitializeComponent(); add this one
+    <br> <b>DataContext = _currentItem;</b>
+    <br> And them Binding all poles, which you have on a Grid
+    <br> After get checking logic for Poles to Add in DB
+    <br> <b>
+       <br> var email = new EmailAddressAttribute(); // Email validation
+           <br> Regex phoneNumber = new Regex("([9]{1}[0-9]{9})$"); //Phone Validation Regex
+            <br>StringBuilder errors = new StringBuilder();
+            <br>Console.WriteLine(LoginBox.Text);
+            <br>Console.WriteLine(_currentUser.Username);
+          <br>  if (string.IsNullOrWhiteSpace(_currentUser.Username))
+             <br>   errors.AppendLine("Указано пустое имя пользователя");
+           <br> if (string.IsNullOrWhiteSpace(_currentUser.Password))
+             <br>   errors.AppendLine("Указано пустое поле пароля");
+           <br> if (_currentUser.Role == null)
+           <br> {
+           <br>     errors.AppendLine("Не выбрана роль");
+           <br> }
+           <br> else
+          <br>  {
+           <br>     _currentUser.Role = RoleBox.Text;
+           <br> }
+          <br>  if (!email.IsValid(_currentUser.Email))
+          <br>      errors.AppendLine("Введен некорректный Email");
+          <br>  if (!phoneNumber.IsMatch(_currentUser.Phone))
+               <br> errors.AppendLine("Введен некорректный номер 9*********");
+        <br>    _currentUser.DateRegistration = DateTime.Now;
+         <br>   if (errors.Length > 0)
+         <br>   {
+         <br>       MessageBox.Show(errors.ToString());
+         <br>       return;
+           <br>}
+           <br> if (_currentUser.ID == 0)
+           <br>     UserDBEntities.GetContext().UserInfo.Add(_currentUser);
+          <br>  try
+           <br> {
+           <br>     UserDBEntities.GetContext().SaveChanges();
+           <br>     MessageBox.Show("Пользователь успешно зарегистрирован");
+           <br>     MainWindow window = new MainWindow();
+          <br>      window.Show();
+           <br>     this.Close(); 
+         <br>   }
+         <br> // EntityValidationConsoleGetError
+        <br>    catch (DbEntityValidationException ex)
+           <br> {
+              <br>  foreach (var eve in ex.EntityValidationErrors)
+              <br>  {
+                    <br>Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following <br>validation errors:",
+                    <br>    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                <br>    foreach (var ve in eve.ValidationErrors)
+                   <br> {
+                   <br>     Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                 <br>           ve.PropertyName, ve.ErrorMessage);
+            <br>        }
+              <br>  }
+          <br>     throw;
+         <br>   }
+    </b>
+    <li>
+<hr>
+        6. Edit Function
+    </li>
+<p>
+    Add to AddingPage next code (after InitializeComponent();, and before DataContext = _currentItem)
+    <br> if(selectedUser != null)
+         <br>   {
+            <br>    _currentUser = selectedUser;
+           <br> }
+           <br><b>
+               Attention!: Add NULL to BtnAdd_Click Manager for frame, to avoid errors
+               
+           </b>
+           <br> Add <b> new AddEditPage((sender as Button).DataContext as ObjectClass))</b> to BtnEdit_Click
+</p>
+<li>
+<hr>
+    7. Reload DataGrid
+</li>
+<p>
+    Add Property "IsVisibility" to DataGrid
+    <br><b>
+        <br>if(Visibility == Visivility.Visible)
+        <br>{
+       <br>  YourBaseEntity.GetContext().ChangeTracker.Entities().ToList().ForEach(p=>p.Reload()):
+        <br>MainDG.ItemsSource = YourBaseEntity.GetContext().Table.ToList();
+        <br>}
+    </b>
+</p>
+<li>
+<hr>
+    8. Delete Object
+</li>
+<p>
+     <br> private void DeleteEmployee_Click(object sender, RoutedEventArgs e)
+         <br>{
+          <br>   var employeeForDeleting = MainDG.SelectedItems.Cast<Employee>().ToList();
+           <br>  if(MessageBox.Show($"Вы точно хотите удалить следующие {employeeForDeleting.Count <br>()} элементов?","АБИС Вагай",
+            <br>     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+           <br>  {
+             <br>    try
+              <br>   {
+               <br>      ABIS_ModuleDBEntities.GetContext().Employee.RemoveRange(employeeForDeleting);
+                <br>     ABIS_ModuleDBEntities.GetContext().SaveChanges();
+                  <br>   MessageBox.Show("Данные удалены");
+                  <br>   MainDG.ItemsSource = ABIS_ModuleDBEntities.GetContext().Employee.ToList();
+
+                <br> }
+               <br>  catch (Exception ex)
+               <br>  {
+                <br>     MessageBox.Show(ex.Message.ToString());
+                <br> }
+           <br>  }
+
+        <br> }
+</p>
+</body>
+</html>
